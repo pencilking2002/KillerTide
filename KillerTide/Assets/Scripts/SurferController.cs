@@ -4,38 +4,76 @@ using UnityEngine;
 
 public class SurferController : MonoBehaviour {
 
+	public static SurferController Instance;
+	[HideInInspector]
 	public Rigidbody2D rb;
+	public float edgeCollisionAdjust = 0.15f;
+	public float speed = 1f;
+
+	public Transform SurferSpriteTransform;
+
+	[Header("Oscilation controls")]
+	public Vector3 offset = new Vector3(0,0.2f,0);
+	public float tweenTime = 0.2f;
+	[HideInInspector] 
+	public int oscilateTweenID;
 
 	private float x;
 	private float y;
-	public float speed = 1f;
 	private Vector2 world;
+	private float initGravityScale;
+	private Vector3 OscilateTargetPos;
+
+
+
+	void Awake()
+	{
+		if (Instance == null)
+			Instance = this;
+		else 
+			Destroy(gameObject);
+
+	}
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 		rb = GetComponent<Rigidbody2D> ();
+		initGravityScale = rb.gravityScale;
+		rb.gravityScale = 0.0f;
+
+		// Start the game with the Whale, bopping up and down
+		Oscilate();
+
 	}
 
-	// Update is called once per frame
-	void Update () {
-	}
 
 	//Physics calculations
-	void FixedUpdate() {
+	void FixedUpdate() 
+	{
+
 		world = Camera.main.ScreenToWorldPoint (new Vector2 (Screen.width, Screen.height));
 
 		x = Input.GetAxisRaw ("SurferHorizontal");
-		y = Input.GetAxisRaw ("SurferVertical");
+		//y = Input.GetAxisRaw ("WhaleVertical");
 
-		rb.AddForce (new Vector2 (x ,y) * speed, ForceMode2D.Impulse);
+		rb.AddForce (new Vector2 (x ,0) * speed, ForceMode2D.Impulse);
 
-		float scale = transform.localScale.x - .15f;
-		Vector3 pos = transform.position;
 
-		rb.position = new Vector2 (
-
-			Mathf.Clamp (pos.x, -(world.x - scale), (world.x - scale)),
-			Mathf.Clamp (pos.y, -(world.y - scale), (world.y - scale)));
 
 	}
+
+	public void Enter()
+	{
+		print ("Surfer enter");
+		var targetPos = transform.position + new Vector3(5,0,0);
+		LeanTween.move(gameObject, targetPos, 0.5f);
+	}
+
+	public void Oscilate () 
+	{
+		OscilateTargetPos = SurferSpriteTransform.localPosition + offset;
+		oscilateTweenID = LeanTween.moveLocal(SurferSpriteTransform.gameObject, OscilateTargetPos, tweenTime).setLoopPingPong(-1).id;
+	}
+
 }

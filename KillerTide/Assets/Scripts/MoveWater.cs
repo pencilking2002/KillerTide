@@ -27,15 +27,18 @@ public class MoveWater : MonoBehaviour {
 		Vector3 screenWorldLeftEdge = Camera.main.ScreenToWorldPoint(new Vector3(0,0,-10));
 
 
+		// If water is to the right of the left edge, move it left
 		if (transform.position.x > screenWorldLeftEdge.x - bCollider.bounds.size.x)
 		{
 			transform.position -= new Vector3(moveSpeed * Time.deltaTime, 0,0);
 		}
+
+		// else place it to the right
 		else
 		{
 
 			Vector3 targetPos = origPos;
-			targetPos.x = screenWorldRightEdge.x;
+			targetPos.x = screenWorldRightEdge.x - 0.1f;
 	
 			transform.position = targetPos;
 		}
