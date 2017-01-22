@@ -10,6 +10,16 @@ public class SurferController : MonoBehaviour {
 	public float edgeCollisionAdjust = 0.15f;
 	public float speed = 1f;
 
+	public enum SurferState
+	{
+		Intro,
+		Surfing,
+		Jumping,
+		Dead
+
+	}
+	SurferState state =  SurferState.Intro;
+
 	public Transform SurferSpriteTransform;
 
 	[Header("Oscilation controls")]
@@ -59,8 +69,10 @@ public class SurferController : MonoBehaviour {
 
 		rb.AddForce (new Vector2 (x ,0) * speed, ForceMode2D.Impulse);
 
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		if (Input.GetKeyDown (KeyCode.Space) && !IsJumpingState()) 
+		{
 			rb.AddForce (new Vector2(0, jumpSpeed), ForceMode2D.Force);
+			SetSurferJumping();
 		}
 
 	}
@@ -69,13 +81,46 @@ public class SurferController : MonoBehaviour {
 	{
 		print ("Surfer enter");
 		var targetPos = transform.position + new Vector3(6,0,0);
-		LeanTween.move(gameObject, targetPos, 0.5f);
+		LeanTween.move(gameObject, targetPos, 0.5f).setOnComplete(() => {
+			rb.gravityScale = 10;
+			SetSurferSurfing();
+
+		});
+	}
+
+	void OnCollisionEnter2D(Collision2D col)
+	{
+		if (col.gameObject.CompareTag("Border"))
+		{
+			SetSurferSurfing();
+		}
 	}
 
 	public void Oscilate () 
 	{
 		OscilateTargetPos = SurferSpriteTransform.localPosition + offset;
 		oscilateTweenID = LeanTween.moveLocal(SurferSpriteTransform.gameObject, OscilateTargetPos, tweenTime).setLoopPingPong(-1).id;
+	}
+
+//	public void SetSurferIntro() { state = SurferState.Intro; }
+//	public void SetSurferSurfing() { state = SurferState.Surfing; }
+//	public void SetSurferJumping() { state = SurferState.Jumping; }
+//	public void SetSurferDead() { state = SurferState.Dead; }
+
+
+	public void SetSurferIntro() { state = SurferState.Intro; }
+	public void SetSurferSurfing() { state = SurferState.Surfing; }
+	public void SetSurferJumping() { state = SurferState.Jumping; }
+	public void SetSurferDead() { state = SurferState.Dead; }
+
+	public bool IsSurfingState() { return state == SurferState.Surfing; }
+	public bool IsIntroState() { return state == SurferState.Intro; }
+	public bool IsJumpingState() { return state == SurferState.Jumping; }
+	public bool IsDeadState() { return state == SurferState.Dead; }
+
+	public SurferState GetState()
+	{
+		return state;
 	}
 
 }
