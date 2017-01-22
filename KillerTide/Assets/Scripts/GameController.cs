@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
@@ -16,6 +17,8 @@ public class GameController : MonoBehaviour {
 	private float windTimer = 0f;
 	private float windPowerPrevious = 0f;
 	public bool windSwitch = false;
+	public Text timerText;
+	private float timerUpdate;
 
 	public Camera cam;
 	public GameObject canvas;
@@ -87,28 +90,32 @@ public class GameController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		if(IsPlayingState()){
+			timerUpdate += Time.deltaTime;
+			SetTimerValue (timerUpdate);
+		}
 		if (Input.GetKeyDown(KeyCode.Return))
 		{
 			print("start");
 			MoveCameraToStartGamePosition();
 		}
 
-		if (windTimer < windDelay) {
-			windTimer = windTimer + Time.deltaTime;
-		}
-		if (windTimer > windDelay && windSwitch == true){
-			windPowerCurrent = Random.Range(-1.5f, 1.5f);
-			if (windPowerCurrent > 0f) {
-				whaleRB.AddForce (new Vector2 (windPowerCurrent, 0), ForceMode2D.Impulse);
-				surferRB.AddForce (new Vector2 (windPowerCurrent, 0), ForceMode2D.Impulse);
-			} else if (windPowerCurrent < 0f)
-			{
-				whaleRB.AddForce(new Vector2 (-windPowerCurrent ,0), ForceMode2D.Impulse);
-				surferRB.AddForce(new Vector2 (-windPowerCurrent ,0), ForceMode2D.Impulse);
-			}
-			windTimer = 0;
-			print (windPowerCurrent);
-		}
+//		if (windTimer < windDelay) {
+//			windTimer = windTimer + Time.deltaTime;
+//		}
+//		if (windTimer > windDelay && windSwitch == true){
+//			windPowerCurrent = Random.Range(-1.5f, 1.5f);
+//			if (windPowerCurrent > 0f) {
+//				whaleRB.AddForce (new Vector2 (windPowerCurrent, 0), ForceMode2D.Impulse);
+//				surferRB.AddForce (new Vector2 (windPowerCurrent, 0), ForceMode2D.Impulse);
+//			} else if (windPowerCurrent < 0f)
+//			{
+//				whaleRB.AddForce(new Vector2 (-windPowerCurrent ,0), ForceMode2D.Impulse);
+//				surferRB.AddForce(new Vector2 (-windPowerCurrent ,0), ForceMode2D.Impulse);
+//			}
+//			windTimer = 0;
+//			print (windPowerCurrent);
+//		}
 
 
 	}
@@ -159,4 +166,8 @@ public class GameController : MonoBehaviour {
 		GameAudio.Instance.Play(GameAudio.MusicType.Game);
 	}
 
+	void SetTimerValue(float value) {
+		
+		timerText.text = Mathf.Ceil(value).ToString();
+	}
 }
