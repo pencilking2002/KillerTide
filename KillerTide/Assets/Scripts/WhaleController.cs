@@ -18,13 +18,13 @@ public class WhaleController : MonoBehaviour {
 
 	public Vector3 startingPos;
 
-	public enum whaleSet{
+	public enum WhaleState{
 		Floating,
-		Hunting,
+		Hiding,
 		Launching,
 		Dropping
 	}
-	public whaleSet whaleState = whaleSet.Floating;
+	public WhaleState state = WhaleState.Floating;
 
 
 	private Vector2 world;
@@ -50,22 +50,14 @@ public class WhaleController : MonoBehaviour {
 
 		// Start the game with the Whale, bopping up and down
 		Oscilate();
-
-		// Make whale sink into the water after some time
-		Invoke("Sink", 1.0f);
-	}
-
-
-	void OnGUI()
-	{
-		GUI.Button(new Rect(10,10,100,40), whaleState.ToString());
+	
 	}
 
 	void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.L))
 		{
-			if (IsWhaleHunting())
+			if (IsWhaleHiding())
 			{
 				print("Launch Whale");
 				SetWhaleLaunching();
@@ -84,7 +76,7 @@ public class WhaleController : MonoBehaviour {
 
 	void WhaleHunt()
 	{
-		if (whaleState == whaleSet.Hunting) 
+		if (state == WhaleState.Hiding) 
 		{
 			x = Input.GetAxisRaw ("WhaleHorizontal");
 			rb.AddForce (new Vector2 (x, 0) * speed, ForceMode2D.Impulse);
@@ -98,7 +90,7 @@ public class WhaleController : MonoBehaviour {
 
 
 	void whaleInAir() {
-		if (whaleState == whaleSet.Launching) {
+		if (state == WhaleState.Launching) {
 			y = Input.GetAxisRaw ("WhaleVertical");
 			rb.AddForce (new Vector2 (0, 50f), ForceMode2D.Impulse);
 			//rb.AddForce(transform.up * speed);
@@ -110,17 +102,19 @@ public class WhaleController : MonoBehaviour {
 		}
 	}
 
-	void Sink()
+	void Hide()
 	{
 		LeanTween.cancel(oscilateTweenID);
 		LeanTween.move(gameObject, transform.position + new Vector3(0,-2.3f,0), 0.5f)
-			.setOnComplete(SurferController.Instance.Enter);
+			.setOnComplete(SurferController.Instance.Enter)
+			.setEaseOutQuart();
 
-		whaleState = whaleSet.Hunting;
+		SetWhaleHunting();
 	}
 
 	public void Oscilate () 
 	{
+		
 		var targetPos = transform.position + offset;
 		oscilateTweenID = LeanTween.move(gameObject, targetPos, tweenTime).setLoopPingPong(-1).id;
 	}
@@ -144,22 +138,28 @@ public class WhaleController : MonoBehaviour {
 		});
 	}
 
-	public void SetWhaleDropping() { whaleState = whaleSet.Dropping; }
-	public void SetWhaleFloating() { whaleState = whaleSet.Floating; }
-	public void SetWhaleHunting() { whaleState = whaleSet.Hunting; }
+	public void SetWhaleDropping() { state = WhaleState.Dropping; }
+	public void SetWhaleFloating() { state = WhaleState.Floating; }
+	public void SetWhaleHunting() { state = WhaleState.Hiding; }
 
 	public void SetWhaleLaunching() 
 	{ 
-		whaleState = whaleSet.Launching;
+		state = WhaleState.Launching;
 		Launch();
 	}
 
 
-	public bool IsWhaleHunting() { return whaleState == whaleSet.Hunting; }
-	public bool IsWhaleDropping() { return whaleState == whaleSet.Dropping; }
-	public bool IsWhaleFloating() { return whaleState == whaleSet.Floating; }
+	public bool IsWhaleHiding() { return state == WhaleState.Hiding; }
+	public bool IsWhaleDropping() { return state == WhaleState.Dropping; }
+	public bool IsWhaleFloating() { return state == WhaleState.Floating; }
+	public bool IsWhaleLaunching() { return state == WhaleState.Launching; }
+	public WhaleState GetWhaleState() { return state; }
 
-	public bool IsWhaleLaunching() { return whaleState == whaleSet.Launching; }
+	public void StartWhaleProcess()
+	{
+		// Make whale sink into the water after some time
+		Invoke("Hide", 0.0f);
+	}
 
 
 }

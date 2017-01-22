@@ -66,7 +66,7 @@ public class SurferController : MonoBehaviour {
 	public void Enter()
 	{
 		print ("Surfer enter");
-		var targetPos = transform.position + new Vector3(5,0,0);
+		var targetPos = transform.position + new Vector3(6,0,0);
 		LeanTween.move(gameObject, targetPos, 0.5f);
 	}
 
