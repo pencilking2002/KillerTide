@@ -89,7 +89,7 @@ public class GameController : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Return))
 		{
 			print("start");
-			CameraStartGame();
+			MoveCameraToStartGamePosition();
 		}
 
 		if (windTimer < windDelay) {
@@ -112,7 +112,7 @@ public class GameController : MonoBehaviour {
 
 	}
 
-	public void CameraStartGame()
+	public void MoveCameraToStartGamePosition()
 	{
 		var targetPos = new Vector3(cameraToMove.transform.position.x, GameStartPoint.position.y, cameraToMove.transform.position.z);
 
@@ -154,6 +154,8 @@ public class GameController : MonoBehaviour {
 	public void StartGame()
 	{
 		WhaleController.Instance.StartWhaleProcess();
+		GameAudio.Instance.Stop();
+		GameAudio.Instance.Play(GameAudio.MusicType.Game);
 	}
 
 }
