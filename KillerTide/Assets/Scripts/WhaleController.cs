@@ -6,6 +6,8 @@ public class WhaleController : MonoBehaviour {
 
 	public static WhaleController Instance;
 
+	public Transform whaleEndDropPoint;
+
 	public Rigidbody2D rb;
 	public float speed = 1f;
 	public float scaleOffSet = 0f;
@@ -76,7 +78,7 @@ public class WhaleController : MonoBehaviour {
 
 	void WhaleHunt()
 	{
-		if (state == WhaleState.Hiding) 
+		if (IsWhaleHiding() || IsWhaleDropping()) 
 		{
 			x = Input.GetAxisRaw ("WhaleHorizontal");
 			rb.AddForce (new Vector2 (x, 0) * speed, ForceMode2D.Impulse);
@@ -122,6 +124,7 @@ public class WhaleController : MonoBehaviour {
 	// Launch whale into the sky
 	void Launch()
 	{
+		// Set whale to look up
 		rb.rotation = 90.0f;
 		transform.position += new Vector3(0, -2.5f,0);
 
@@ -131,11 +134,21 @@ public class WhaleController : MonoBehaviour {
 
 			targetPos = transform.position + new Vector3(0, transform.position.y + 30.0f,0);
 			LeanTween.move(gameObject, targetPos, 0.5f).setOnComplete(() => {
-				rb.rotation = -90;
+				
 				SetWhaleDropping();
-			}).setDelay(0.1f); 
+
+			}).setDelay(0.1f)
+
+			.setOnComplete(() => {
+					SetWhaleDropping();
+					rb.rotation = -90;
+					targetPos = new Vector3(transform.position.x, whaleEndDropPoint.position.y, transform.position.z);
+					LeanTween.move(gameObject,targetPos, 0.4f).setDelay(5.0f);
+			});
 
 		});
+
+
 	}
 
 	public void SetWhaleDropping() { state = WhaleState.Dropping; }
