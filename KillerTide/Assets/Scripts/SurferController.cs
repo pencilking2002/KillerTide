@@ -26,7 +26,6 @@ public class SurferController : MonoBehaviour {
 	private Vector3 OscilateTargetPos;
 
 
-
 	void Awake()
 	{
 		if (Instance == null)
