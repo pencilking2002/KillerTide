@@ -5,7 +5,7 @@ using UnityEngine;
 public class CloudControllerNear : MonoBehaviour {
 
 	private Vector2 world;
-	private float speed;
+	public float speed;
 
 	// Use this for initialization
 	void Start () {
