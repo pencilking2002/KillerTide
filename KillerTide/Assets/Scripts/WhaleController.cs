@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WhaleController : MonoBehaviour {
 
@@ -18,6 +19,8 @@ public class WhaleController : MonoBehaviour {
 	[HideInInspector] 
 	public int oscilateTweenID;
 
+	public SpriteRenderer shadow;
+
 	public Vector3 startingPos;
 
 	public enum WhaleState{
@@ -28,7 +31,7 @@ public class WhaleController : MonoBehaviour {
 	}
 	public WhaleState state = WhaleState.Floating;
 
-
+	private float origRotation;
 	private Vector2 world;
 	private float x;
 	private float y;
@@ -48,12 +51,17 @@ public class WhaleController : MonoBehaviour {
 
 	void Start () 
 	{
+		shadow.material.color = Color.clear;
+
 		rb = GetComponentInChildren<Rigidbody2D> ();
+		origRotation = rb.rotation;
 
 		// Start the game with the Whale, bopping up and down
 		Oscilate();
 	
 	}
+
+	Vector4 val = new Vector4(1,1,1,0);
 
 	void Update()
 	{
@@ -64,7 +72,11 @@ public class WhaleController : MonoBehaviour {
 				print("Launch Whale");
 				SetWhaleLaunching();
 			}
+		}
 
+		if (IsWhaleDropping())
+		{
+			shadow.transform.position = new Vector3(transform.position.x, shadow.transform.position.y, shadow.transform.position.z);
 		}
 	}
 
@@ -111,7 +123,7 @@ public class WhaleController : MonoBehaviour {
 			.setOnComplete(SurferController.Instance.Enter)
 			.setEaseOutQuart();
 
-		SetWhaleHunting();
+		SetWhaleHiding();
 	}
 
 	public void Oscilate () 
@@ -124,6 +136,7 @@ public class WhaleController : MonoBehaviour {
 	// Launch whale into the sky
 	void Launch()
 	{
+		print ("launch");
 		// Set whale to look up
 		rb.rotation = 90.0f;
 		transform.position += new Vector3(0, -2.5f,0);
@@ -132,7 +145,7 @@ public class WhaleController : MonoBehaviour {
 
 		LeanTween.move(gameObject, targetPos, 0.3f).setOnComplete(() => {
 
-			targetPos = transform.position + new Vector3(0, transform.position.y + 30.0f,0);
+			targetPos = transform.position + new Vector3(0,30.0f,0);
 			LeanTween.move(gameObject, targetPos, 0.5f).setOnComplete(() => {
 				
 				SetWhaleDropping();
@@ -140,10 +153,29 @@ public class WhaleController : MonoBehaviour {
 			}).setDelay(0.1f)
 
 			.setOnComplete(() => {
+
+					
+
 					SetWhaleDropping();
+					shadow.material.color = Color.white;
+
+
+//					LeanTween.value( shadow.gameObject, (Color col) => {}, Color.clear, Color.white, 5.0f)
+//						.setOnUpdateColor((Color col) => {
+//							shadow.color = col;
+//						});
+
 					rb.rotation = -90;
-					targetPos = new Vector3(transform.position.x, whaleEndDropPoint.position.y, transform.position.z);
-					LeanTween.move(gameObject,targetPos, 0.4f).setDelay(5.0f);
+					targetPos = new Vector3(transform.position.x, whaleEndDropPoint.position.y + 0.5f, transform.position.z);
+					LeanTween.move(gameObject,targetPos, 0.4f).setDelay(5.0f).setOnComplete(() => {
+						SetWhaleHiding();
+						LeanTween.cancel(oscilateTweenID);
+
+						LeanTween.cancelAll();
+						rb.rotation = origRotation;
+						transform.position += new Vector3(0, 4.0f);
+
+					});
 			});
 
 		});
@@ -151,14 +183,24 @@ public class WhaleController : MonoBehaviour {
 
 	}
 
-	public void SetWhaleDropping() { state = WhaleState.Dropping; }
+	public void SetWhaleDropping() 
+	{ 
+		state = WhaleState.Dropping;
+		//shadow.gameObject.SetActive(true);
+
+	}
 	public void SetWhaleFloating() { state = WhaleState.Floating; }
-	public void SetWhaleHunting() { state = WhaleState.Hiding; }
+	public void SetWhaleHiding() 
+	{ 	
+		state = WhaleState.Hiding; 
+		shadow.material.color = Color.clear;
+	}
 
 	public void SetWhaleLaunching() 
 	{ 
 		state = WhaleState.Launching;
 		Launch();
+
 	}
 
 

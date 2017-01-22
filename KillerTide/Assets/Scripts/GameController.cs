@@ -23,10 +23,10 @@ public class GameController : MonoBehaviour {
 	public Camera cam;
 	public GameObject canvas;
 
-	[SerializeField]
-	private Rigidbody2D whaleRB;
-	[SerializeField]
-	private Rigidbody2D surferRB;
+//	[SerializeField]
+//	private Rigidbody2D whaleRB;
+//	[SerializeField]
+//	private Rigidbody2D surferRB;
 
 	// This will be assigned either the camera or the hyper cube group
 	private GameObject cameraToMove;
@@ -82,9 +82,9 @@ public class GameController : MonoBehaviour {
 
 	void OnGUI()
 	{
-		GUI.Button(new Rect(10,10,100,40), WhaleController.Instance.GetWhaleState().ToString());
-		GUI.Button(new Rect(10,50,100,40), GetGameState().ToString());
-		GUI.Button(new Rect(10,100,100,40), SurferController.Instance.GetState().ToString());
+//		GUI.Button(new Rect(10,10,100,40), WhaleController.Instance.GetWhaleState().ToString());
+//		GUI.Button(new Rect(10,50,100,40), GetGameState().ToString());
+//		GUI.Button(new Rect(10,100,100,40), SurferController.Instance.GetState().ToString());
 	}
 
 	// Update is called once per frame

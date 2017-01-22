@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SurferController : MonoBehaviour {
 
@@ -28,6 +29,7 @@ public class SurferController : MonoBehaviour {
 	[HideInInspector] 
 	public int oscilateTweenID;
 	public float jumpSpeed;
+
 
 	private float x;
 	private float y;
@@ -93,6 +95,17 @@ public class SurferController : MonoBehaviour {
 		if (col.gameObject.CompareTag("Border"))
 		{
 			SetSurferSurfing();
+		}
+
+		else if(col.gameObject.CompareTag("Whale") && WhaleController.Instance.IsWhaleDropping())
+		{
+			print("Kill surfer");
+			rb.AddForce(new Vector2(Random.Range(0,200), 200), ForceMode2D.Impulse);
+			rb.rotation = Random.Range(0,180);
+			GetComponent<CapsuleCollider2D>().isTrigger = true;
+			SetSurferDead();
+
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 	}
 
