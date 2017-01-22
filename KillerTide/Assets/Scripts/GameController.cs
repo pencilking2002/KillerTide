@@ -79,8 +79,8 @@ public class GameController : MonoBehaviour {
 
 	void OnGUI()
 	{
-		//GUI.Button(new Rect(10,10,100,40), WhaleController.Instance.GetWhaleState().ToString());
-		//GUI.Button(new Rect(10,50,100,40), GetGameState().ToString());
+		GUI.Button(new Rect(10,10,100,40), WhaleController.Instance.GetWhaleState().ToString());
+		GUI.Button(new Rect(10,50,100,40), GetGameState().ToString());
 	}
 
 	// Update is called once per frame
