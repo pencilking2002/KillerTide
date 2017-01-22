@@ -6,6 +6,7 @@ public class CloudGroupController : MonoBehaviour {
 
 	public static CloudGroupController Instance;
 	public float cloudSpeed;
+	public bool isLeft;
 
 	// Use this for initialization
 	void Awake () 

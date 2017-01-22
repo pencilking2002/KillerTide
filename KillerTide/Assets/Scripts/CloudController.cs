@@ -6,8 +6,6 @@ public class CloudController : MonoBehaviour {
 
 	private Vector2 world;
 	private float cloudSpeed;
-	public bool isLeft;
-
 	private SpriteRenderer sp;
 
 	// Use this for initialization
@@ -25,7 +23,7 @@ public class CloudController : MonoBehaviour {
 	// Update is called once per fram
 
 	void Update () {
-		if (isLeft) {
+		if (CloudGroupController.Instance.isLeft) {
 			Vector2 nextPosition = new Vector2 (transform.position.x - cloudSpeed, transform.position.y);
 			transform.position = Vector2.Lerp (transform.position, nextPosition, Time.deltaTime * cloudSpeed);
 			if (transform.position.x < -(world.x + 2.2f)) {
