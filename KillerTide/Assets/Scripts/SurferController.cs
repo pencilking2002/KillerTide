@@ -17,6 +17,7 @@ public class SurferController : MonoBehaviour {
 	public float tweenTime = 0.2f;
 	[HideInInspector] 
 	public int oscilateTweenID;
+	public float jumpSpeed;
 
 	private float x;
 	private float y;
@@ -58,7 +59,9 @@ public class SurferController : MonoBehaviour {
 
 		rb.AddForce (new Vector2 (x ,0) * speed, ForceMode2D.Impulse);
 
-
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			rb.AddForce (new Vector2(0, jumpSpeed), ForceMode2D.Force);
+		}
 
 	}
 
