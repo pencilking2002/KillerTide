@@ -94,6 +94,11 @@ public class SurferController : MonoBehaviour {
 		{
 			SetSurferSurfing();
 		}
+
+		else if(col.gameObject.CompareTag("Whale") && WhaleController.Instance.IsWhaleDropping())
+		{
+			print("Kill surfer");
+		}
 	}
 
 	public void Oscilate () 
